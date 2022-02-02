@@ -4,6 +4,7 @@ import com.lj.novels.daomain.Book;
 import com.lj.novels.daomain.BookDesc;
 
 import java.util.List;
+import java.util.Set;
 
 public interface BookService {
 
@@ -14,4 +15,6 @@ public interface BookService {
     Book selectBookByXsbh(Integer xsbh) ;
 
     BookDesc findBookDescByXsbh(Integer yhbh, Integer xsbh);
+
+    public List<Book> rankings(Set<Object> bookId);
 }

@@ -6,7 +6,7 @@ import com.lj.novels.daomain.Page;
 import com.lj.novels.daomain.User;
 import com.lj.novels.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,15 +15,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 public class BookController {
 
     @Autowired
     private BookService bookService;
+
+    @Autowired
+    private RedisTemplate<String,Object> template;
 
     //首页展示
     @GetMapping("/page")
@@ -83,6 +87,7 @@ public class BookController {
     //小说具体章节显示
     @GetMapping("/readBook")
     public ModelAndView readBook(Integer xsbh, Integer xszj){
+        //此代码部署到Linux会出问题
 //        ClassPathResource pathResource = new ClassPathResource("templates/books/" + xsbh + "/book/");
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("templates/books/" + xsbh + "/book/" + xszj + ".html") ;
         if(inputStream == null){
@@ -95,5 +100,17 @@ public class BookController {
         mav.addObject("xszj",xszj) ;
         mav.setViewName("readBook");
         return mav ;
+    }
+
+    //排行榜
+    @GetMapping("/rankings")
+    public ModelAndView rankings(){
+        ModelAndView mav = new ModelAndView() ;
+        //查看前五的书
+        Set<Object> book = template.opsForZSet().reverseRange("book", 0, 4);
+        List<Book> books = bookService.rankings(book);
+        mav.addObject("books",books) ;
+        mav.setViewName("rankings");
+        return mav;
     }
 }

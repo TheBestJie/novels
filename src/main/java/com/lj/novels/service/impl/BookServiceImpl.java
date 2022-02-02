@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -76,6 +77,15 @@ public class BookServiceImpl implements BookService {
             return new BookDesc(book, bookshelf, userComments);
         }
         return new BookDesc(book, bookshelf, null) ;
+    }
+
+    @Override
+    public List<Book> rankings(Set<Object> bookId){
+        List<Book> books = new ArrayList<>() ;
+        for (Object o : bookId) {
+            books.add(bookDao.selectBookByXsbh(Integer.parseInt(((String)o).replace("book_","")))) ;
+        }
+        return books ;
     }
 
 
