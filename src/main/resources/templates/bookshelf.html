@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <div th:replace="comm :: comm"></div>
+</head>
+<body>
+<div class="panel panel-default">
+    <!--标题面板-->
+    <div style="height: 50px" class="panel-heading">
+        <!--图标-->
+        <div>
+            <span style="margin-top: 6px" class="glyphicon glyphicon-fire" aria-hidden="true">火火读书</span>
+            <div style="display: inline; float: right">
+                <div th:if="${session.user} ne null" style="margin-right: 5px;width: 6em;overflow: hidden;display: inline" th:text="${session.user.yhmc}">admisssn</div>
+                <div th:if="${session.user} eq null" style="margin-right: 5px;width: 6em;overflow: hidden;display: inline">&emsp;&emsp;&emsp;&emsp;</div>
+                <div class="dropdown" style="display: inline">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="glyphicon glyphicon-align-right"></span>
+                        <!--                        <span class="caret"></span>-->
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                        <li><a th:href="@{/bookMain}">首页</a></li>
+                        <li><a th:href="@{/myBooks}">我的书架</a></li>
+                        <li th:if="${session.user} ne null"><a th:href="@{/exit}">退出登录</a></li>
+                        <li th:if="${session.user} eq null"><a th:href="@{/login}">登录</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--内容展示区-->
+    <div class="panel-footer">
+        <div th:each="book : ${books}">
+            <div class="row">
+                <div class="col-xs-6 col-md-4">
+                    <div class="thumbnail">
+                        <img th:src="@{${book.getXsfm()}}" alt="">
+                    </div>
+                </div>
+                <div style="color: #704646">
+                    <h4 th:text="${book.getXsmc()}">标题</h4>
+                    <p th:text="'作者:' + ${book.getXszz()}">作者</p>
+                    <p th:text="'类别:' + ${book.getXslb()}">类别</p>
+                    <p th:text="'状态:' + ${book.getXszt()}">状态</p>
+                    <p th:text="'字数:约' + ${book.getXszzs()} + '字'">字数</p>
+                    <p style="height: 20px;overflow: hidden" th:text="'简介:' + ${book.getXsjs()}">介绍</p>
+                    <p><a href="#" class="btn btn-primary" role="button" th:onclick="bookDesc([[${book.getXsbh}]])">了解详情</a></p>
+                </div>
+            </div>
+            <hr>
+        </div>
+    </div>
+</div>
+<script>
+    function bookDesc(bookName) {
+        location.href = "/bookDesc?xsbh=" + bookName;
+    }
+</script>
+</body>
+</html>

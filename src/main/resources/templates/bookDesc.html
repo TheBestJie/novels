@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <div th:replace="comm :: comm"></div>
+</head>
+<body>
+<div class="panel panel-default">
+    <!--标题面板-->
+    <div style="height: 50px" class="panel-heading">
+        <!--图标-->
+        <div>
+            <span style="margin-top: 6px" class="glyphicon glyphicon-fire" aria-hidden="true">火火读书</span>
+            <div style="display: inline; float: right">
+                <div th:if="${session.user} ne null" style="margin-right: 5px;width: 6em;overflow: hidden;display: inline" th:text="${session.user.yhmc}">admisssn</div>
+                <div th:if="${session.user} eq null" style="margin-right: 5px;width: 6em;overflow: hidden;display: inline">&emsp;&emsp;&emsp;&emsp;</div>
+                <div class="dropdown" style="display: inline">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="glyphicon glyphicon-align-right"></span>
+                        <!--                        <span class="caret"></span>-->
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                        <li><a th:href="@{/bookMain}">首页</a></li>
+                        <li><a th:href="@{/myBooks}">我的书架</a></li>
+                        <li th:if="${session.user} ne null"><a th:href="@{/exit}">退出登录</a></li>
+                        <li th:if="${session.user} eq null"><a th:href="@{/login}">登录</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--内容展示区-->
+    <div class="panel-footer">
+        <!--小说详细展示区-->
+        <div class="row">
+            <div class="col-xs-6 col-md-4">
+                <div class="thumbnail">
+                    <img th:src="@{${bookDesc.getBook().getXsfm()}}" alt="">
+                </div>
+            </div>
+            <div style="color: #704646">
+                <h4 th:text="${bookDesc.getBook().getXsmc()}">标题</h4>
+                <p th:text="'作者:' + ${bookDesc.getBook().getXszz()}">作者</p>
+                <p th:text="'类别:' + ${bookDesc.getBook().getXslb()}">类别</p>
+                <p th:text="'状态:' + ${bookDesc.getBook().getXszt()}">状态</p>
+                <p th:text="'字数:约' + ${bookDesc.getBook().getXszzs()} + '字'">字数</p>
+                <div style="margin-bottom: 60px" class="btn-group" role="group" th:if="${bookDesc.getBookshelf()} eq null">
+                    <button type="button" class="btn btn-default" th:onclick="read([[${bookDesc.getBook().getXsbh()}]])">立即阅读</button>
+                    <button type="button" class="btn btn-default" th:onclick="addBook([[${bookDesc.getBook().getXsbh()}]])">加入书架</button>
+                </div>
+                <div style="margin-bottom: 60px" class="btn-group" role="group" th:if="${bookDesc.getBookshelf()} ne null">
+                    <button type="button" class="btn btn-default" th:onclick="read([[${bookDesc.getBook().getXsbh()}]])">立即阅读</button>
+                    <button type="button" class="btn btn-default" th:onclick="deleteBook([[${bookDesc.getBook().getXsbh()}]])">移除书架</button>
+                </div>
+                <p th:text="'简介:' + ${bookDesc.getBook().getXsjs()}">介绍</p>
+            </div>
+        </div>
+    </div>
+    <!--评论区-->
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="input-group">
+                        <input id="commentDesc" type="text" class="form-control" placeholder="快来为小说发表评论吧！">
+                        <span class="input-group-btn">
+                        <button id="comment" class="btn btn-default" type="button" th:onclick="insertComment([[${bookDesc.getBook().getXsbh()}]])">评论</button>
+                    </span>
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+            </div>
+        </div>
+    </div>
+
+    <!--评论展示区-->
+    <ul class="list-group" th:if="${bookDesc.getUserComments()} eq null">
+        <li class="list-group-item">该小说目前还没有评论，快成为第一个吧~</li>
+    </ul>
+
+    <ul class="list-group" th:if="${bookDesc.getUserComments()} ne null" th:each="userComment : ${bookDesc.getUserComments()}">
+        <li class="list-group-item">
+            <div>
+                <!--头部信息-->
+                <div>
+                    <span th:text="${userComment.getYhmc()}">张三</span>
+                    <span style="float: right" th:text="${userComment.getPlsj()}">2020.11.23</span>
+                </div>
+                <!--具体评论-->
+                <div class="well well-sm" style="margin-bottom: 0" th:text="${userComment.getPlnr()}">
+                    这本书真不错
+                </div>
+                <div style="height: 20px;" th:if="${userComment.getYhbh()} eq ${session.user.yhbh}">
+                    <span style="float: right">
+                        <a th:onclick="deleteComment([[${userComment.getPlbh()}]],[[${bookDesc.getBook().getXsbh()}]])">删除</a>
+                    </span>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+<script>
+    function deleteComment(plbh,xsbh) {
+        $.get('/deleteComment',{plbh:plbh},function (data) {
+            if(data === "on"){
+                location.href = "/bookDesc?xsbh=" + xsbh + "&time=" +  new Date().getMilliseconds() ;
+            }
+        });
+    }
+
+    function insertComment(xsbh){
+        var commentDesc = $('#commentDesc').val() ;
+        $.get('/comment',{plnr:commentDesc,xsbh:xsbh},function (data) {
+            if(data === "on"){
+                location.reload() ;
+            }
+        });
+    }
+
+    function addBook(xsbh) {
+        $.get('/addBook',{xsbh:xsbh},function (data) {
+            if(data === "on"){
+                location.reload() ;
+            }
+        });
+    }
+
+    function deleteBook(xsbh) {
+        $.get('/deleteBook',{xsbh:xsbh},function (data) {
+            if(data === "on"){
+                location.reload() ;
+            }
+        });
+    }
+
+    function read(xsbh) {
+        location.href = "/read?xsbh=" + xsbh;
+    }
+</script>
+</body>
+</html>

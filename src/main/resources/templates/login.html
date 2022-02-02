@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <div th:replace="comm :: comm"></div>
+    <style>
+        .input-group{
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="panel panel-default">
+    <!--标题面板-->
+    <div style="height: 50px" class="panel-heading">
+        <!--图标-->
+        <div>
+            <span style="margin-top: 6px" class="glyphicon glyphicon-fire" aria-hidden="true">火火读书</span>
+        </div>
+    </div>
+    <!--内容面板-->
+    <div class="panel-body">
+        <form id="form-login" th:action="@{/login}" method="post">
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">用户名</span>
+                <input type="text" name="username" class="form-control" placeholder="用户名" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon2">密码&emsp;</span>
+                <input type="password" name="password" class="form-control" placeholder="密码" aria-describedby="basic-addon2">
+            </div>
+        </form>
+        <div style="width: 100%">
+            <button style="width: 100%" type="button" onclick="login()" class="btn btn-default">登录</button>
+        </div>
+    </div>
+<script>
+    function login() {
+        $('#form-login').submit();
+    }
+</script>
+</body>
+</html>
