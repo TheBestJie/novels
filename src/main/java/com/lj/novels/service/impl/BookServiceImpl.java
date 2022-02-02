@@ -32,10 +32,12 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> findBookByLimit(Integer page, String bookName) {
+        //分页处理
         Integer _page = (page-1) * 5 ;
         return bookDao.selectBookByLimit(_page, 5, bookName) ;
     }
 
+    //获取查询后的页数
     @Override
     public Integer allPage(String bookName) {
         Integer bookLength = bookDao.bookLength(bookName) ;
@@ -45,6 +47,7 @@ public class BookServiceImpl implements BookService {
         return bookLength / 5;
     }
 
+//    通过小说编号查询小说
     @Override
     public Book selectBookByXsbh(Integer xsbh) {
         return bookDao.selectBookByXsbh(xsbh);
@@ -79,6 +82,7 @@ public class BookServiceImpl implements BookService {
         return new BookDesc(book, bookshelf, null) ;
     }
 
+    //排行榜功能
     @Override
     public List<Book> rankings(Set<Object> bookId){
         List<Book> books = new ArrayList<>() ;
